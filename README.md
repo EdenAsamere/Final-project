@@ -46,7 +46,7 @@ The **e-QUB App** leverages modern technologies to digitize and improve the Equb
 
 2. Navigate to the project directory:
    ```bash
-   cd e-qub-app
+   cd Final-project
    ```
 
 3. Install dependencies:
