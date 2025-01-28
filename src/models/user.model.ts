@@ -4,14 +4,7 @@ import { IUserInterface } from '../interfaces/user.interface';
 const user = new Schema<IUserInterface>({
        phoneNumber: {
         type: String,
-        unique: true, // Assuming email should be unique
-        validate: {
-          validator: function(v: string) {
-            // Example: Validate if the phone number follows a specific format
-            return /\d{3}-\d{3}-\d{4}/.test(v);
-          },
-          message: props => `${props.value} is not a valid phone number!`
-        },
+        unique: true, 
     },
     password: {
         type: String,
