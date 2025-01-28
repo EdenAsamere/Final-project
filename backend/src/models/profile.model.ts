@@ -34,7 +34,6 @@ const profileSchema = new Schema<IProfile>({
     },
     email: { 
         type: String,
-        unique: false,
         required: false,
     },
     userId: { 
