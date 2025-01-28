@@ -41,7 +41,7 @@ The **e-QUB App** leverages modern technologies to digitize and improve the Equb
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Hiwot-Beyene/Final-Year-Project.git
+   https://github.com/EdenAsamere/Final-project.git
    ```
 
 2. Navigate to the project directory:
