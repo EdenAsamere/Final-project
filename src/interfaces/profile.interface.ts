@@ -27,7 +27,6 @@ export interface IProfile extends Document {
         penalityReason: { type: String, required: true },
         penalityAmount: { type: Number, required: true }
     },
-    email: string,
-    phoneNumber?:string,
+    email: {type: string,unique:false, required: false},
     userId: Schema.Types.ObjectId;
 }

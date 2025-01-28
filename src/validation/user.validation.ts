@@ -1,15 +1,12 @@
-import {object, string, array, TypeOf} from 'zod';
+import { object, string, TypeOf } from 'zod';
 
 export const createUserValidation = object({
-    body : object({
-        phoneNumber: string().regex(/\d{3}-\d{3}-\d{4}/, "Invalid phone number format"),
-        password: string({ required_error: "Password is required" }).min(8, "Password must be at least 8 characters"),
-        role: object({
-            name: string(),
-            permissions: array(string()),
-            grantAll: string()
-        },{required_error: "Role is required"})
-    })
-})
+  password: string({ required_error: "Password is required" })
+    .min(8, "Password must be at least 8 characters")
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character")
+    .regex(/\d/, "Password must contain at least one number"),
+});
 
 export type CreateUserInput = TypeOf<typeof createUserValidation>;

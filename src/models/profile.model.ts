@@ -9,48 +9,33 @@ const profileSchema = new Schema<IProfile>({
         type: Number,
         min: [18, 'You must be at least 18 years old to register'],
     },
-    profilePicture: { type: String, required: true },
+    profilePicture: { type: String},
     address: {
-        city: { type: String, required: true },
-        subcity: { type: String, required: true },
-        kebele: { type: String, required: true },
-        houseNumber: { type: String, required: true },
-        woreda: { type: String, required: true },
-        zone: { type: String, required: true },
-        region: { type: String, required: true }
+        city: { type: String },
+        subcity: { type: String },
+        kebele: { type: String },
+        houseNumber: { type: String },
+        woreda: { type: String },
+        zone: { type: String },
+        region: { type: String }
     },
     collateralDocuments: {
-        idCard: { type: String, required: true },
-        thirdPartyIdCard: { type: String, required: true },
-        bankStatement: { type: String, required: true },
-        employmentLetter: { type: String, required: true },
-        businessLicense: { type: String, required: true },
-        other: { type: String, required: true }
+        idCard: { type: String },
+        thirdPartyIdCard: { type: String },
+        bankStatement: { type: String },
+        employmentLetter: { type: String },
+        businessLicense: { type: String },
+        other: { type: String}
     },
     penality: {
-        penalityPoints: { type: Number, required: true },
-        penalityReason: { type: String, required: true },
-        penalityAmount: { type: Number, required: true }
+        penalityPoints: { type: Number},
+        penalityReason: { type: String},
+        penalityAmount: { type: Number }
     },
     email: { 
         type: String,
-        unique: true, 
-        validate: {
-            validator: function(v: string) {
-                return /\S+@\S+\.\S+/.test(v);
-            },
-            message: props => `${props.value} is not a valid email address!`
-        },
-    },
-    phoneNumber: { 
-        type: String,
-        unique: true, 
-        validate: {
-            validator: function(v: string) {
-                return /\d{3}-\d{3}-\d{4}/.test(v);
-            },
-            message: props => `${props.value} is not a valid phone number!`
-        },
+        unique: false,
+        required: false,
     },
     userId: { 
         type: Schema.Types.ObjectId, 
