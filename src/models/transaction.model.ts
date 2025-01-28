@@ -9,3 +9,6 @@ const transactionSchema = new Schema<ItransactionInterface>({
     transactionType: { type: String, enum: ['contribution', 'payout'], required: true },
     status: { type: String, enum: ['pending', 'completed', 'failed'], required: true },
 }, { timestamps: true });
+
+
+export default model<ItransactionInterface>('Transaction', transactionSchema);
