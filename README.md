@@ -24,7 +24,7 @@ The **e-QUB App** leverages modern technologies to digitize and improve the Equb
 - **Backend:** Node.js for handling API requests and business logic.
 - **Database:** MongoDB for managing user and group data.
 - **Authentication:** OTP verification via SMS.
-- **Payment Integration:** Stripe for secure payment processing.
+- **Payment Integration:** Chapa for secure payment processing.
 - **Storage:** AWS S3 for handling file uploads such as scanned IDs and documents.
 
 ## Group Members
