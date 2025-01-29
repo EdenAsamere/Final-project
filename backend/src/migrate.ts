@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import dotenv from "dotenv";
 
 import User  from "./models/user.model";
 import Profile  from "./models/profile.model";
@@ -7,11 +8,12 @@ import EqubEvent from "./models/equbevent.model";
 import Notification from "./models/notification.model";
 import Transaction from "./models/transaction.model";
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/equb';
+dotenv.config(); // Load .env file
+const MONGO_URI = process.env.MONGO_URI ;
 
 async function migrate() {
     try {
-        await mongoose.connect(MONGO_URI);
+        await mongoose.connect(MONGO_URI as string);
 
 
         console.log('Connected to MongoDB');
