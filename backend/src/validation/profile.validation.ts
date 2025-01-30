@@ -7,12 +7,7 @@ export const createProfileValidation = object({
         age: number().min(18, "You must be at least 18 years old to register"),
         email : string().email(),
         phoneNumber: string().regex(/\d{3}-\d{3}-\d{4}/, "Invalid phone number format"),
-        password: string({ required_error: "Password is required" }).min(8, "Password must be at least 8 characters"),
-        role: object({
-            name: string(),
-            permissions: array(string()),
-            grantAll: string()
-        },{required_error: "Role is required"})
+        password: string({ required_error: "Password is required" }).min(8, "Password must be at least 8 characters")
     })
 })
 

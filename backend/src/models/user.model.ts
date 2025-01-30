@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose';
 import { IUserInterface } from '../interfaces/user.interface';
 
 const user = new Schema<IUserInterface>({
-       phoneNumber: {
+    phoneNumber: {
         type: String,
         unique: true, 
     },
