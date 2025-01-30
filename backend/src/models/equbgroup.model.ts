@@ -1,9 +1,9 @@
 import { model, Schema } from 'mongoose';
-import { IEqubGroupInterface } from '../interfaces/equbgroup.interface';
+import { IEqubGroupInterface } from '../interfaces/equbgroup.interface'; // Ensure the path is correct
 
 const equbGroupSchema = new Schema<IEqubGroupInterface>({
     group_name: { type: String, required: true },
-    description: { type: String },
+    description: { type: String, required: false },  // Optional field
     payout_Schedule: { type: Date, required: true },
     type: { type: String, enum: ['private', 'hosted'], required: true },
     admin: { type: Schema.Types.ObjectId, ref: 'User', required: true },
@@ -15,4 +15,4 @@ const equbGroupSchema = new Schema<IEqubGroupInterface>({
     status: { type: String, enum: ['active', 'inactive'], required: true },
 }, { timestamps: true });
 
-export default model<IEqubGroupInterface>('Equbgroup', equbGroupSchema);
+export default model<IEqubGroupInterface>('EqubGroup', equbGroupSchema);
