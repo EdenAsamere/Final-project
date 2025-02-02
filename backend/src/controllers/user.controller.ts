@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { UserService } from '../services/user.service';
 import { createUserValidation } from '../validation/user.validation';
 import { loginUserValidation } from '../validation/loginUserValidation';
+import { ZodError } from 'zod';
 const userService = new UserService();
 
 export const registerUser = async (req: Request, res: Response) => {
@@ -28,14 +29,20 @@ export const registerUser = async (req: Request, res: Response) => {
                 error: (error instanceof Error) ? error.message : error,
             });
         }
-}catch(error){
-    res.status(400).json({
-        message:"Zod Error registering user",
-        error: (error instanceof Error) ? error.message : error,
-    });
-}
-};
+  }catch (error) {
+    if (error instanceof ZodError) {
+      const formattedErrors = error.errors.map((err) => ({
+        field: err.path.join("."), // Convert path to string
+        message: err.message,
+      }));
 
+      return res.status(400).json({
+        message: "Validation error",
+        errors: formattedErrors, // Send structured errors
+      });
+    }
+  }
+};
 
 export const loginUser = async (req: Request, res: Response) => {
     try {
