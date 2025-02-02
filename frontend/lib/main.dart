@@ -1,10 +1,15 @@
 import 'package:equbapp/firebase_options.dart';
 import 'package:equbapp/screens/home_screen.dart';
 import 'package:equbapp/screens/login_screen.dart';
+import 'package:equbapp/screens/registeration_screen.dart';
 import 'package:equbapp/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // Import firebase_auth
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:equbapp/blocs/registration_bloc.dart';
+import 'package:equbapp/blocs/login_bloc.dart';
+import 'package:equbapp/repositories/user_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,13 +24,28 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var auth = FirebaseAuth.instance; // Move FirebaseAuth to build method
+    var auth = FirebaseAuth.instance;
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Equb App',
-      theme: AppTheme.lightTheme,
-      home: auth.currentUser != null ? HomeScreen() : LoginScreen(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<RegistrationBloc>(
+          create: (context) => RegistrationBloc(UserRepository()),
+        ),
+        BlocProvider<LoginBloc>(
+          create: (context) => LoginBloc(UserRepository()),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Equb App',
+        theme: AppTheme.lightTheme,
+        home: auth.currentUser != null ? HomeScreen() : LoginScreen(),
+        routes: {
+          '/login': (context) => LoginScreen(),
+          '/register': (context) => RegistrationScreen(),
+          '/home': (context) => HomeScreen(),
+        },
+      ),
     );
   }
 }
