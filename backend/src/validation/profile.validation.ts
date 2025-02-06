@@ -1,14 +1,32 @@
-import {object, string, array, TypeOf, number} from 'zod';
+import { z } from "zod";
 
-export const createProfileValidation = object({
-    body : object({
-        firstName: string({ required_error: "First name is required" }),
-        lastName: string({ required_error: "Last name is required" }),
-        age: number().min(18, "You must be at least 18 years old to register"),
-        email : string().email(),
-        phoneNumber: string().regex(/\d{3}-\d{3}-\d{4}/, "Invalid phone number format"),
-        password: string({ required_error: "Password is required" }).min(8, "Password must be at least 8 characters")
-    })
-})
 
-export type CreateProfileInput = TypeOf<typeof createProfileValidation>;
+const addressSchema = z.object({
+  city: z.string().min(2, "City name is too short"),
+  subcity: z.string().optional(),
+  kebele: z.string().optional(),
+  houseNumber: z.string().optional(),
+  woreda: z.string().optional(),
+  zone: z.string().optional(),
+  region: z.string().optional(),
+});
+
+
+export const profileSchema = z.object({
+  profilePicture: z.string().url().optional(), // Optional field, must be a valid URL
+  address: addressSchema.optional(), // Address is optional but must match the schema
+});
+
+
+export const updateProfileSchema = profileSchema.partial(); // Allows partial updates
+
+export const uploadDocumentSchema = z.object({
+  documentType: z.enum(["idCard", "bankStatement", "passport", "other"]),
+  documentUrl: z.string().url("Invalid document URL"),
+});
+
+export const penaltySchema = z.object({
+  penaltyPoints: z.number().min(0, "Penalty points must be 0 or greater"),
+  penaltyReason: z.string().min(5, "Reason must be at least 5 characters"),
+  penaltyAmount: z.number().min(0, "Penalty amount must be 0 or greater"),
+});

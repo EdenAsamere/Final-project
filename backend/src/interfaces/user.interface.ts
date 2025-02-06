@@ -5,4 +5,4 @@ export interface IUserInterface extends Document {
     role:'Admin' | 'User';
     verified: boolean;
     chapaAccountId?: string;
-    }
+}

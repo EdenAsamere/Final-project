@@ -6,6 +6,7 @@ import express from 'express';
 import { connectDB } from './config/db';
 import userRoutes from './routes/user.routes';
 import equbGroupRoutes from './routes/equbgroup.routes'; // Correct route import
+import profileRoutes from './routes/profile.routes';
 
 dotenv.config();
 
@@ -16,7 +17,8 @@ app.use(bodyParser.json());
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/users', userRoutes);
-app.use('/api/equb', equbGroupRoutes); // Ensure this is properly mounted
+app.use('/api/equb', equbGroupRoutes); 
+app.use('/api/user/profile', profileRoutes);
 
 connectDB();
 
