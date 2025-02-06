@@ -14,19 +14,12 @@ export interface IProfile extends Document {
         region: string;   
         
     };
-    collateralDocuments: {
-        idCard: { type: String, required: true },
-        thirdPartyIdCard: { type: String, required: true },
-        bankStatement: { type: String, required: true },
-        employmentLetter: { type: String, required: true },
-        businessLicense: { type: String, required: true },
-        other: { type: String, required: true }
-    },
+    collateraldocumentId: [Schema.Types.ObjectId];
     penality: {
-        penalityPoints: { type: Number, required: true },
-        penalityReason: { type: String, required: true },
-        penalityAmount: { type: Number, required: true }
-    },
+        penalityPoints: number;  
+        penalityReason: string;  
+        penalityAmount: number;  
+    };
     email: {type: string,required: false},
     userId: Schema.Types.ObjectId;
 }

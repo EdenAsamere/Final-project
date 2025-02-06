@@ -1,15 +1,15 @@
 import { Schema, model } from 'mongoose';
+import { ICollateral } from '../interfaces/collateral.interface';
 import { IProfile } from '../interfaces/profile.interface';
 
 const profileSchema = new Schema<IProfile>({
-
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
-    age: { 
+    age: {
         type: Number,
         min: [18, 'You must be at least 18 years old to register'],
     },
-    profilePicture: { type: String},
+    profilePicture: { type: String },
     address: {
         city: { type: String },
         subcity: { type: String },
@@ -19,31 +19,28 @@ const profileSchema = new Schema<IProfile>({
         zone: { type: String },
         region: { type: String }
     },
-    collateralDocuments: {
-        idCard: { type: String },
-        thirdPartyIdCard: { type: String },
-        bankStatement: { type: String },
-        employmentLetter: { type: String },
-        businessLicense: { type: String },
-        other: { type: String}
-    },
+    collateraldocumentId: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Collateral',
+        }
+    ],    
     penality: {
-        penalityPoints: { type: Number},
-        penalityReason: { type: String},
+        penalityPoints: { type: Number },
+        penalityReason: { type: String },
         penalityAmount: { type: Number }
     },
-    email: { 
+    email: {
         type: String,
         required: false,
     },
-    userId: { 
-        type: Schema.Types.ObjectId, 
-        ref: 'User', 
-        required: [true, 'User ID is required'], 
-        unique: true, 
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: [true, 'User ID is required'],
+        unique: true,
         index: true,
     },
-}
-, { timestamps: true });
+}, { timestamps: true });
 
 export default model<IProfile>('Profile', profileSchema);

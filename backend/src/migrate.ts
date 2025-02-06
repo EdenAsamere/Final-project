@@ -7,6 +7,7 @@ import EqubGroup from "./models/equbgroup.model";
 import EqubEvent from "./models/equbevent.model";
 import Notification from "./models/notification.model";
 import Transaction from "./models/transaction.model";
+import collateralModel from "./models/collateral.model";
 
 dotenv.config(); // Load .env file
 const MONGO_URI = process.env.MONGO_URI ;
@@ -24,6 +25,7 @@ async function migrate() {
         await EqubEvent.createCollection();
         await Notification.createCollection();
         await Transaction.createCollection();
+        await collateralModel.createCollection();
 
         console.log('Collections created successfully');
     } catch (error) {
