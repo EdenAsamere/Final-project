@@ -63,7 +63,7 @@ The **e-QUB App** leverages modern technologies to digitize and improve the Equb
 
 4. Start the backend server:
    ```bash
-   npm start
+   npm run dec
    ```
 
 5. Run the Flutter app:
