@@ -1,5 +1,4 @@
 import { Schema, model } from 'mongoose';
-import { ICollateral } from '../interfaces/collateral.interface';
 import { IProfile } from '../interfaces/profile.interface';
 
 const profileSchema = new Schema<IProfile>({
@@ -37,7 +36,6 @@ const profileSchema = new Schema<IProfile>({
     userId: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: [true, 'User ID is required'],
         unique: true,
         index: true,
     },

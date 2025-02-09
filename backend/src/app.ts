@@ -18,7 +18,7 @@ app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/users', userRoutes);
 app.use('/api/equb', equbGroupRoutes); 
-app.use('/api/user/profile', profileRoutes);
+app.use('/api/profile', profileRoutes);
 
 connectDB();
 

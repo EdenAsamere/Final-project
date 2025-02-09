@@ -1,13 +1,17 @@
 import {Schema, model } from 'mongoose';
 import { ICollateral } from '../interfaces/collateral.interface';
 
-const collateralSchema = new Schema<ICollateral>({
-    documentType: { type: String, required: true },  
-    documentUrl: { type: String, required: true },  
-    uploadedAt: { type: Date, default: Date.now },
-    verified: { type: Boolean, default: false }     
-}
+const CollateralSchema = new Schema<ICollateral>(
+    {
+        userId: { type: Schema.Types.ObjectId, ref: "User"},
+        documentType: { type: String, enum:['Bank Statment','Land deeds','Car ownership','House ownership','Business license','Employment contract'] , required:true},
+        documentUrl: { type: String, required:true },
+        adminRemark: { type: String },
+        status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+        verified: { type: Boolean, default: false }
+    },
+    { timestamps: true } 
+);
 
-, { timestamps: true });
+export default model<ICollateral>("Collateral", CollateralSchema);
 
-export default model<ICollateral>('Collateral', collateralSchema);
