@@ -7,6 +7,7 @@ import { connectDB } from './config/db';
 import userRoutes from './routes/user.routes';
 import equbGroupRoutes from './routes/equbgroup.routes'; // Correct route import
 import profileRoutes from './routes/profile.routes';
+import imageRoutes from "./routes/imageRoutes";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/users', userRoutes);
 app.use('/api/equb', equbGroupRoutes); 
 app.use('/api/profile', profileRoutes);
+app.use("/api/images", imageRoutes);
 
 connectDB();
 
