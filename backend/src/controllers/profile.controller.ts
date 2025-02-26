@@ -4,6 +4,7 @@ import { AuthRequest } from "../middlewares/auth.middleware";
 import userModel from "../models/user.model";
 import collateralModel from "../models/collateral.model";
 
+
 const profileService = new ProfileService();
 
 export const getUserProfile = async (req: Request, res: Response): Promise<void> => {
@@ -13,7 +14,6 @@ export const getUserProfile = async (req: Request, res: Response): Promise<void>
             res.status(403).json({ message: "Unauthorized: User not found in token" });
             return;
         }
-
         const profile = await profileService.getUserProfile(userId);
         res.status(200).json({ message: "Profile retrieved successfully", data: profile });
     } catch (error) {
@@ -39,27 +39,25 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
 export const uploadCollateralDocument = async (req: Request, res: Response): Promise<void> => {
     try {
         const userId = (req as AuthRequest).user?.userId;
-        
-        if (!req.file) {
-            res.status(400).json({ error: 'No file uploaded' });
-            return;
-        }
-
         if (!userId) {
             res.status(403).json({ message: "Unauthorized: User not found in token" });
             return;
         }
-
-        const documentType = req.body.documentType;
-        const documentUrl = req.file.path;
-
-        if (!documentType) {
-            res.status(400).json({ error: 'Document type is required' });
+      
+        if (!req.file) {
+            res.status(400).json({ error: "No file uploaded" });
             return;
         }
-
+    
+        const documentType = req.body.documentType;
+        const file = req.file.path;
+        if (!documentType) {
+            res.status(400).json({ error: "Document type is required" });
+            return;
+        }
+     
         const existingDocument = await collateralModel.findOne({ userId, documentType }).exec();
-        
+     
         if (existingDocument) {
             res.status(400).json({ error: `You have already uploaded a ${documentType}. You can only upload one.` });
             return;
@@ -68,22 +66,35 @@ export const uploadCollateralDocument = async (req: Request, res: Response): Pro
         const newDocument = new collateralModel({
             userId,
             documentType,
-            documentUrl,
-            status: 'pending',
+            file,
+            status: "pending",
             verified: false
         });
-
+    
         await newDocument.save();
+   
         res.status(201).json({ message: "Collateral document uploaded successfully", data: newDocument });
-
     } catch (error) {
-        console.error("Upload Error:", error);
-        res.status(500).json({ message: error instanceof Error ? error.message : "Error uploading collateral document" });
+        console.log(error);
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        
+        const errorDetails = JSON.stringify(error, Object.getOwnPropertyNames(error));
+        
+        console.error("Upload Error Details:", {
+            message: errorMessage,
+            details: errorDetails
+        });
+        
+        
+        res.status(500).json({ 
+            message: errorMessage,
+            details: errorDetails
+        });
     }
 };
 
 
-export const rejectCollateralController = async (req: Request, res: Response): Promise<void> => {
+export const rejectCollateral = async (req: Request, res: Response): Promise<void> => {
     try{
         const collateralId = req.params.id;
         const { adminRemark } = req.body;
@@ -227,12 +238,30 @@ export const updateCollateralDocument = async (req: Request, res: Response): Pro
             return;
         }
 
-        const collateral = await profileService.updateCollateralDocument(collateralId, req.body);
-        res.status(200).json({ message: "Collateral document updated successfully", data: collateral });
+        if (!req.file) {
+            res.status(400).json({ message: "No file provided" });
+            return;
+        }
+
+        console.log("Updating collateral file:", req.file.path);
+
+        // Extract the uploaded file path
+        const fileUrl = req.file.path; // Assuming multer stores file in `req.file.path`
+        // Call service to update only the file
+        const updatedCollateral = await profileService.updateCollateralDocument(collateralId, fileUrl);
+
+        res.status(200).json({
+            message: "Collateral document file updated successfully",
+            data: updatedCollateral,
+        });
+        console.log("Updated Collateral File:", updatedCollateral);
     } catch (error) {
-        res.status(500).json({ message: error instanceof Error ? error.message : "Error updating collateral document" });
+        res.status(500).json({
+            message: error instanceof Error ? error.message : "Error updating collateral document",
+        });
     }
 };
+
 
 export const deleteCollateralDocument = async (req: Request, res: Response): Promise<void> => {
     try {
