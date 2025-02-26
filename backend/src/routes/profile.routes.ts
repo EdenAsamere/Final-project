@@ -5,7 +5,7 @@ import {
     getMyCollateralDocuments,
     getUserCollateralDocument,
     getUserProfile,
-    rejectCollateralController,
+    rejectCollateral,
     updateProfile,
     uploadCollateralDocument,
     verifyCollateralDocument,
@@ -21,17 +21,16 @@ const router = express.Router();
 
 router.get('/', authenticate, getUserProfile);
 router.put('/update', authenticate, updateProfile);
-router.post("/upload", authenticate, upload.single("documentUrl"), uploadCollateralDocument);
-router.get('/approved', authenticate, getApprovedCollateralDocuments);
-router.get('/pending', authenticate, getPendingCollateralDocuments);
-router.get('/rejected', authenticate, getRejectedCollateralDocuments);
-router.patch("/update-document/:id", authenticate, upload.single("documentUrl"), updateCollateralDocument);
-router.post("/approve/:id", authenticate, verifyCollateralDocument);
-router.post("/reject/:id", authenticate, rejectCollateralController);
+router.post("/collateral/upload", authenticate, upload.single("file"), uploadCollateralDocument);
+router.get('/collateral/approved', authenticate, getApprovedCollateralDocuments);
+router.get('/collateral/pending', authenticate, getPendingCollateralDocuments);
+router.get('/collateral/rejected', authenticate, getRejectedCollateralDocuments);
+router.put("/collateral/update-document/:id", authenticate, upload.single("file"), updateCollateralDocument);
+router.post("/collateral/approve/:id", authenticate, verifyCollateralDocument);
+router.post("/collateral/reject/:id", authenticate, rejectCollateral);
 router.get('/collateral/:id', authenticate, getCollateralDocument);
 router.get('/users-collaterals/:id', authenticate, getUserCollateralDocument);
 router.get('/my-collaterals', authenticate, getMyCollateralDocuments);
 router.delete('/delete-collateral/:id', authenticate, deleteCollateralDocument);
 
 export default router;
-

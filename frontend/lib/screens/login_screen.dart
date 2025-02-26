@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equbapp/blocs/login_bloc.dart';
-import 'package:equbapp/blocs/login_event.dart';
-import 'package:equbapp/blocs/login_state.dart';
+import 'package:equbapp/blocs/login/login_bloc.dart';
+import 'package:equbapp/blocs/login/login_event.dart';
+import 'package:equbapp/blocs/login/login_state.dart';
 import 'package:equbapp/models/loginUser_model.dart';
-import 'package:equbapp/screens/registeration_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   @override

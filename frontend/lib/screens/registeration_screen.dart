@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../blocs/registration_bloc.dart';
-import '../blocs/registration_event.dart';
-import '../blocs/registration_state.dart';
+import '../blocs/registration/registration_bloc.dart';
+import '../blocs/registration/registration_event.dart';
+import '../blocs/registration/registration_state.dart';
 import '../models/user_model.dart';
 import 'package:show_hide_password/show_hide_password.dart';
-// import 'home_screen.dart';
 import 'login_screen.dart';
 
 class RegistrationScreen extends StatefulWidget {

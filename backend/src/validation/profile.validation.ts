@@ -22,7 +22,7 @@ export const updateProfileSchema = profileSchema.partial(); // Allows partial up
 
 export const uploadDocumentSchema = z.object({
   documentType: z.enum(["idCard", "bankStatement", "passport", "other"]),
-  documentUrl: z.string().url("Invalid document URL"),
+  file: z.string().url("Invalid document URL"),
 });
 
 export const penaltySchema = z.object({

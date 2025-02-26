@@ -1,7 +1,5 @@
 import profileModel from "../models/profile.model";
 import collateralModel from "../models/collateral.model";
-import { ICollateral } from "../interfaces/collateral.interface";
-import { IProfile } from "../interfaces/profile.interface";
 
 export class ProfileService {
     async getUserProfile(userId: string){
@@ -19,30 +17,46 @@ export class ProfileService {
     async uploadCollateralDocument(
         userId: string,
         documentType: string,
-        documentUrl: string
+        file: string
     ) {
         const userProfile = await profileModel.findOne({ userId }).exec();
         if (!userProfile) {
             throw new Error("User profile not found");
         }
-    
-        // Save the collateral document
         const collateral = new collateralModel({
             documentType,
-            documentUrl,
+            file,
             status: 'pending',
             verified: false,
         });
     
         await collateral.save();
-    
-        // Link to user profile
         userProfile.collateraldocumentId.push(collateral.id);
         await userProfile.save();
-    
         return userProfile;
     }
     
+    async updateCollateralDocument(collateralId: string, fileUrl: string) {
+        const existingDocument = await collateralModel.findById(collateralId).exec();
+        if (!existingDocument) {
+            throw new Error("Collateral document not found");
+        }
+    
+        if (!fileUrl) {
+            throw new Error("No file URL provided for update");
+        }
+    
+        const updatedCollateral = await collateralModel.findOneAndUpdate(
+            { _id: collateralId },
+            { $set: { file:fileUrl } }, // Only update the fileUrl field
+            { new: true }
+        ).exec();
+    
+        console.log("Updated Collateral File:", updatedCollateral);
+        return updatedCollateral;
+    }
+    
+
 
     async getCollateralDocument(collateralId: string) {
         return await collateralModel.findById(collateralId).exec();
@@ -53,15 +67,6 @@ export class ProfileService {
     async getMyCollateralDocuments(userId: string) {
         return await collateralModel.find({ userId }).exec();
     };
-   
-    async updateCollateralDocument(collateralId: string, updateData: any) {
-        return await collateralModel.findOneAndUpdate(
-            { _id: collateralId },
-            { $set: updateData },
-            { new: true }
-        ).exec();
-    };
-
     async getRejectedCollateralDocuments() {
         return await collateralModel.find({ status: 'rejected' }).exec();
     }

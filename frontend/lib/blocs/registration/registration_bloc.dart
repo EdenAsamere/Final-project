@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../repositories/user_repository.dart';
+import '../../repositories/user_repository.dart';
 import 'registration_event.dart';
 import 'registration_state.dart';
 

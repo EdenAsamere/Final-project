@@ -1,14 +1,18 @@
+import 'package:equbapp/blocs/collateral/collateral_bloc.dart';
+import 'package:equbapp/blocs/profile/profile_bloc.dart';
 import 'package:equbapp/firebase_options.dart';
-import 'package:equbapp/screens/home_screen.dart';
 import 'package:equbapp/screens/login_screen.dart';
+import 'package:equbapp/screens/profile_screen.dart';
 import 'package:equbapp/screens/registeration_screen.dart';
+import 'package:equbapp/screens/upload_collaterals_screen.dart';
 import 'package:equbapp/theme/theme.dart';
+import 'package:equbapp/widgets/mainScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equbapp/blocs/registration_bloc.dart';
-import 'package:equbapp/blocs/login_bloc.dart';
+import 'package:equbapp/blocs/registration/registration_bloc.dart';
+import 'package:equbapp/blocs/login/login_bloc.dart';
 import 'package:equbapp/repositories/user_repository.dart';
 
 void main() async {
@@ -16,7 +20,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -24,8 +28,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var auth = FirebaseAuth.instance;
-
     return MultiBlocProvider(
       providers: [
         BlocProvider<RegistrationBloc>(
@@ -34,16 +36,36 @@ class MyApp extends StatelessWidget {
         BlocProvider<LoginBloc>(
           create: (context) => LoginBloc(UserRepository()),
         ),
+        BlocProvider<ProfileBloc>(
+          create: (context) => ProfileBloc(UserRepository()),
+        ),
+        BlocProvider<CollateralBloc>(
+          create: (context) => CollateralBloc(UserRepository()),
+        ),
+   
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Equb App',
         theme: AppTheme.lightTheme,
-        home: auth.currentUser != null ? HomeScreen() : LoginScreen(),
+        home: StreamBuilder<User?>(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasData) {
+              return const MainScreen();
+            } else {
+              return  LoginScreen();
+            }
+          },
+        ),
         routes: {
           '/login': (context) => LoginScreen(),
-          '/register': (context) => RegistrationScreen(),
-          '/home': (context) => HomeScreen(),
+          '/register': (context) =>  RegistrationScreen(),
+          '/home': (context) => const MainScreen(),
+          '/profile': (context) => ProfileScreen(),
+          '/upload-collaterals': (context) => UploadCollateralScreen(),
         },
       ),
     );
