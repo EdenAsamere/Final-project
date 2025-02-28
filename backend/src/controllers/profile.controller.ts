@@ -271,6 +271,8 @@ export const deleteCollateralDocument = async (req: Request, res: Response): Pro
             return;
         }
 
+        
+
         const collateral = await profileService.deleteCollateralDocument(collateralId);
         res.status(200).json({ message: "Collateral document deleted successfully", data: collateral });
     } catch (error) {
