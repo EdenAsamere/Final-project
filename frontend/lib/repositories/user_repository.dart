@@ -10,7 +10,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 
 class UserRepository {
-  final String baseUrl = "http://192.168.0.101:5000/api";
+  final String baseUrl = "http://192.168.0.110:5000/api";
 
   /// Register a new user
   Future<bool> registerUser(User user) async {
@@ -248,6 +248,31 @@ Future<Collateral?> updateCollateralDocument(Collateral collateral,String id) as
     } catch (e) {
       print("Error during collateral upload: $e");
       return null;
+    }
+  }
+
+   Future<bool> removeCollateralDocument(String id) async {
+    try {
+      String? token = await AuthStorage.getToken();
+      if (token == null) return false;
+
+      final response = await http.delete(
+        Uri.parse("$baseUrl/profile/delete-collateral/$id"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print("Failed to delete collateral: ${response.body}");
+        return false;
+      }
+    } catch (e) {
+      print("Error deleting collateral: $e");
+      return false;
     }
   }
 }

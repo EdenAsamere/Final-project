@@ -19,3 +19,8 @@ class UpdateCollateral extends CollateralEvent {
   final Collateral collateral;
   UpdateCollateral(this.collateral);
 }
+
+class DeleteCollateral extends CollateralEvent {
+  final String id;
+  DeleteCollateral(this.id);
+}

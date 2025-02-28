@@ -96,7 +96,10 @@ export class ProfileService {
 
     async deleteCollateralDocument(collateralId: string) {
         const collateral = await collateralModel.findById(collateralId).exec();
-        
+        const collateralStatus = collateral?.status;
+        if(collateralStatus == "approved"){
+            throw new Error("Cannot delete an approved collateral document");
+        }
         if (!collateral) {
             return null;
         }
