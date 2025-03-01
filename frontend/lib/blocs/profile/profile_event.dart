@@ -5,6 +5,10 @@ class LoadProfile extends ProfileEvent {
   LoadProfile();
 }
 
+class GetIdDocumentVerificationStatus extends ProfileEvent {
+  GetIdDocumentVerificationStatus();
+}
+
 
 
 

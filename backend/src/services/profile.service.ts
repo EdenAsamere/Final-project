@@ -1,5 +1,6 @@
 import profileModel from "../models/profile.model";
 import collateralModel from "../models/collateral.model";
+import IdVerification from '../models/idVerification.model';
 
 export class ProfileService {
     async getUserProfile(userId: string){
@@ -149,5 +150,17 @@ export class ProfileService {
         userProfile.penality.penalityAmount = penalityAmount;
 
         await userProfile.save();
+    }
+
+    async getIdverificationStatus(userId: String):Promise<any>{
+        const userProfile = await profileModel.findOne({ userId
+        }).exec();
+
+        if (!userProfile) {
+            throw new Error("User profile not found");
+        }
+
+        const verificationStatusofuser = await IdVerification.findOne({ userId: userProfile.userId }).exec();
+        return verificationStatusofuser;
     }
 }

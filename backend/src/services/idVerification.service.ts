@@ -118,4 +118,22 @@ export class IdVerificationService {
         }
         throw new Error("ID verification not rejected");
     }
+
+    async reuploadDocumentBeforeSubmission(userId: string, idType: IdType, idDocument: string) {
+        const userProfile = await profileModel.findOne({ userId
+        }).exec();
+
+        if (!userProfile) {
+            throw new Error("User profile not found");
+        }
+
+        const idVerification = await IdVerification.findOne({ userId }).exec();
+        if (!idVerification) {
+            throw new Error("ID verification not found");
+        }
+        idVerification.idType = idType;
+        idVerification.idDocument = idDocument;
+        await idVerification.save();
+        return idVerification;
+    }
 }

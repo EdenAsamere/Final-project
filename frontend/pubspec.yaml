@@ -38,6 +38,7 @@ dependencies:
   url_launcher: ^6.1.14
   image_picker: ^1.1.2
   webview_flutter: ^4.10.0 
+  camera: ^0.10.0+1
 
 dev_dependencies:
   flutter_test:
@@ -52,7 +53,8 @@ dev_dependencies:
 flutter:
   # Ensures the Material Design Icons are available for your app
   uses-material-design: true
-
+  assets:
+    - assets/images/image1.png
   # Fonts configuration for custom fonts in your app
   fonts:
     - family: Heading
