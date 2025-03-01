@@ -5,9 +5,9 @@ import morgan from 'morgan';
 import express from 'express';
 import { connectDB } from './config/db';
 import userRoutes from './routes/user.routes';
-import equbGroupRoutes from './routes/equbgroup.routes'; // Correct route import
+import equbGroupRoutes from './routes/equbgroup.routes'; 
 import profileRoutes from './routes/profile.routes';
-
+import idVerificationRoutes from './routes/idVerification.route'
 dotenv.config();
 
 const app = express();
@@ -19,6 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/users', userRoutes);
 app.use('/api/equb', equbGroupRoutes); 
 app.use('/api/profile', profileRoutes);
+app.use('/api/idVerification', idVerificationRoutes)
 
 connectDB();
 
