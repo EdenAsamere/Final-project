@@ -257,4 +257,20 @@ export const deleteCollateralDocument = async (req: Request, res: Response): Pro
     } catch (error) {
         res.status(500).json({ message: error instanceof Error ? error.message : "Error deleting collateral document" });
     }
+
+    
 };
+
+export const getIdverificationStatus = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const userId = (req as AuthRequest).user?.userId;
+        if (!userId) {
+            res.status(403).json({ message: "Unauthorized: User not found in token" });
+            return;
+        }
+        const idVerification = await profileService.getIdverificationStatus(userId);
+        res.status(200).json({ message: "ID verification status retrieved successfully", data: idVerification });
+    } catch (error) {
+        res.status(500).json({ message: error instanceof Error ? error.message : "Error retrieving ID verification status" });
+    }
+}

@@ -13,11 +13,12 @@ import {
 
 import { authenticate } from '../middlewares/auth.middleware';
 import upload from '../middlewares/upload';
+import { getIdverificationStatus } from '../controllers/profile.controller';
 
 const router = express.Router();
 router.post('/uploadDocument', authenticate, upload.single('file'), uploadIdVerificationDocument);
 router.post('/uploadSelfie', authenticate, upload.single('file'), uploadSelfie);
-router.post('/submit/:id', authenticate, submitIdVerificationDocument);
+router.post('/submit', authenticate, submitIdVerificationDocument);
 router.post('/approve/:id', authenticate, approveIdVerificationDocument);
 router.post('/reject/:id', authenticate, rejectIdVerificationDocument);
 router.get('/rejectedDocuments', authenticate, getrejectedIdVerificationDocuments);

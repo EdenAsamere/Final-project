@@ -15,6 +15,7 @@ factory Collateral.fromJson(Map<String, dynamic> json) {
     return Collateral(
       id: json["_id"],
       file: json["file"],
+
       documentType: json["documentType"],
       status: json["status"],
     );

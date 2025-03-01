@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:equbapp/models/collateral_model.dart';
 import 'package:equbapp/models/user_profile.dart';
+import 'package:equbapp/repositories/baseurl.dart';
 import 'package:http/http.dart' as http;
 import 'package:equbapp/models/loginUser_model.dart';
 import 'package:equbapp/models/user_model.dart';
@@ -10,8 +11,6 @@ import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 
 class UserRepository {
-  final String baseUrl = "http://192.168.0.110:5000/api";
-
   /// Register a new user
   Future<bool> registerUser(User user) async {
     try {
@@ -274,5 +273,36 @@ Future<Collateral?> updateCollateralDocument(Collateral collateral,String id) as
       print("Error deleting collateral: $e");
       return false;
     }
+  }
+
+  Future<String?> getIdDocumentVerificationStatus() async {
+    try {
+      String? token = await AuthStorage.getToken();
+      if (token == null) return "Not Verified";
+
+      final response = await http.get(
+        Uri.parse("$baseUrl/profile/id-documentstatus"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      );
+      print(response.body);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body)["data"];
+        if(data != null){
+          return data["status"];
+        }
+        
+      } else {
+        print("Failed to fetch verification status: ${response.body}");
+        return "";
+      }
+    } catch (e) {
+      print("Error fetching verification status: $e");
+      return "";
+    }
+    return null;
   }
 }
