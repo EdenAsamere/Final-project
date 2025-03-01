@@ -63,33 +63,12 @@ export const uploadCollateralDocument = async (req: Request, res: Response): Pro
             return;
         }
 
-        const newDocument = new collateralModel({
-            userId,
-            documentType,
-            file,
-            status: "pending",
-            verified: false
-        });
-    
-        await newDocument.save();
-   
+        const newDocument = await profileService.uploadCollateralDocument(userId, documentType, file);
         res.status(201).json({ message: "Collateral document uploaded successfully", data: newDocument });
     } catch (error) {
         console.log(error);
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
-        
-        const errorDetails = JSON.stringify(error, Object.getOwnPropertyNames(error));
-        
-        console.error("Upload Error Details:", {
-            message: errorMessage,
-            details: errorDetails
-        });
-        
-        
-        res.status(500).json({ 
-            message: errorMessage,
-            details: errorDetails
-        });
+        res.status(500).json({ message: `Error uploading collateral document: ${errorMessage}` });
     }
 };
 
@@ -271,7 +250,7 @@ export const deleteCollateralDocument = async (req: Request, res: Response): Pro
             return;
         }
 
-        
+
 
         const collateral = await profileService.deleteCollateralDocument(collateralId);
         res.status(200).json({ message: "Collateral document deleted successfully", data: collateral });

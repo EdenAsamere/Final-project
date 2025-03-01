@@ -33,7 +33,7 @@ export class ProfileService {
         await collateral.save();
         userProfile.collateraldocumentId.push(collateral.id);
         await userProfile.save();
-        return userProfile;
+        return collateral;
     }
     
     async updateCollateralDocument(collateralId: string, fileUrl: string) {
@@ -55,8 +55,6 @@ export class ProfileService {
         console.log("Updated Collateral File:", updatedCollateral);
         return updatedCollateral;
     }
-    
-
 
     async getCollateralDocument(collateralId: string) {
         return await collateralModel.findById(collateralId).exec();

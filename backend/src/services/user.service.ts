@@ -28,7 +28,7 @@ export class UserService {
         const token = jwt.sign(
             { userId: user._id, phoneNumber: user.phoneNumber, role: user.role },
             JWT_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn: "24h" }
           );
       
 
