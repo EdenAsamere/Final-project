@@ -38,6 +38,7 @@ dependencies:
   url_launcher: ^6.1.14
   image_picker: ^1.1.2
   webview_flutter: ^4.10.0 
+  screens: ^2.5.0
 
 dev_dependencies:
   flutter_test:
@@ -50,7 +51,13 @@ dev_dependencies:
   flutter_lints: ^3.0.0
 
 flutter:
-  # Ensures the Material Design Icons are available for your app
+  assets:
+    - assets/images/id_verification.png
+    - assets/images/ethiopia_flag.png
+    - assets/images/kenya_flag.png
+    - assets/images/nigeria_flag.png
+    - assets/images/south_africa_flag.png    
+
   uses-material-design: true
 
   # Fonts configuration for custom fonts in your app
@@ -58,6 +65,7 @@ flutter:
     - family: Heading
       fonts:
         - asset: assets/fonts/RobotoSerif-SemiBold.ttf
+        
         
     - family: Body
       fonts:

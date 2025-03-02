@@ -1,7 +1,9 @@
 import 'package:equbapp/blocs/collateral/collateral_bloc.dart';
 import 'package:equbapp/blocs/profile/profile_bloc.dart';
 import 'package:equbapp/firebase_options.dart';
+import 'package:equbapp/screens/verification_method_page.dart';
 import 'package:equbapp/screens/login_screen.dart';
+import 'package:equbapp/screens/id_verification_page.dart';
 import 'package:equbapp/screens/profile_screen.dart';
 import 'package:equbapp/screens/registeration_screen.dart';
 import 'package:equbapp/screens/upload_collaterals_screen.dart';
@@ -66,6 +68,8 @@ class MyApp extends StatelessWidget {
           '/home': (context) => const MainScreen(),
           '/profile': (context) => ProfileScreen(),
           '/upload-collaterals': (context) => UploadCollateralScreen(),
+          '/idverification': (context) => const IdVerificationPage(),
+          '/verification': (context) => const VerificationMethodPage(),
         },
       ),
     );
