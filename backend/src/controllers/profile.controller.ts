@@ -250,10 +250,16 @@ export const deleteCollateralDocument = async (req: Request, res: Response): Pro
             res.status(400).json({ message: "Collateral ID is required" });
             return;
         }
+        const userId = (req as AuthRequest).user?.userId;
+        if (!userId) {
+            res.status(403).json({ message: "Unauthorized: User not found in token" });
+            return;
+        }
 
 
 
-        const collateral = await profileService.deleteCollateralDocument(collateralId);
+
+        const collateral = await profileService.deleteCollateralDocument(collateralId,userId);
         res.status(200).json({ message: "Collateral document deleted successfully", data: collateral });
     } catch (error) {
         res.status(500).json({ message: error instanceof Error ? error.message : "Error deleting collateral document" });
