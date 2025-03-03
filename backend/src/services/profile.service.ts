@@ -21,6 +21,7 @@ export class ProfileService {
         file: string
     ) {
         const userProfile = await profileModel.findOne({ userId }).exec();
+        console.log("userProfile", userProfile);
         if (!userProfile) {
             throw new Error("User profile not found");
         }
@@ -64,6 +65,7 @@ export class ProfileService {
         return await collateralModel.find({ userId }).exec();
     };
     async getMyCollateralDocuments(userId: string) {
+        console.log("userId", userId);
         return await collateralModel.find({ userId }).exec();
     };
     async getRejectedCollateralDocuments() {

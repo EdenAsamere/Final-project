@@ -51,55 +51,57 @@ export class UserService {
         city: string;
         password: string;
         confirmPassword: string;
-    }): Promise<any> {
+      }): Promise<any> {
         const { firstName, lastName, phoneNumber, city, password, confirmPassword } = body;
-
-        if (password !== confirmPassword) {
-            throw new Error('Passwords do not match');
+      
+        // Check for existing user
+        const existingUser = await UserModel.findOne({ phoneNumber });
+        if (existingUser) {
+          throw new Error('Phone number already registered');
         }
-
+      
+        // Password validation
+        if (password !== confirmPassword) {
+          throw new Error('Passwords do not match');
+        }
+      
+        // Create user
         const hashedPassword = await bcrypt.hash(password, 10);
-
         const newUser = new UserModel({
-            phoneNumber: phoneNumber, 
-            password: hashedPassword,
-            role: 'User',
-            verified: false, 
+          phoneNumber,
+          password: hashedPassword,
+          role: 'User',
+          verified: false,
         });
-
+      
         const savedUser = await newUser.save();
+      
+        // Create profile
         const newProfile = new ProfileModel({
-            firstName,
-            lastName,
-            address: {
-                city,
-                region: '',
-                subcity: '', 
-                kebele: '',
-                houseNumber: '',
-                woreda: '',
-                zone: '',
-            },
-            userId: savedUser._id,
-            email:'',
-            collateralDocuments: {
-                idCard: '',
-                thirdPartyIdCard: '',
-                bankStatement: '',
-                employmentLetter: '',
-                businessLicense: '',
-                other: '',
-            },
-            penality: {
-                penalityPoints: 0,
-                penalityReason: '',
-                penalityAmount: 0,
-            },
+          firstName,
+          lastName,
+          address: {
+            city,
+            region: '',
+            subcity: '',
+            kebele: '',
+            houseNumber: '',
+            woreda: '',
+            zone: '',
+          },
+          userId: savedUser._id,
+          email: '',
+          collateraldocumentId: [], // Correct field name
+          penality: {
+            penalityPoints: 0,
+            penalityReason: '',
+            penalityAmount: 0,
+          },
         });
-
-
+      
         await newProfile.save();
-
+      
         return savedUser;
+      
     }
 }
