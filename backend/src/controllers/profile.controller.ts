@@ -129,6 +129,7 @@ export const getMyCollateralDocuments = async (req: Request, res: Response): Pro
             return;
         }
         const collateral = await profileService.getMyCollateralDocuments(userId);
+        console.log("collateral", collateral);
         res.status(200).json({ message: "Collateral document retrieved successfully", data: collateral });
     }
     catch(error){

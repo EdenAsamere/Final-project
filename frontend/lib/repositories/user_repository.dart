@@ -11,26 +11,19 @@ import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 
 class UserRepository {
-  /// Register a new user
-  Future<bool> registerUser(User user) async {
-    try {
-      final response = await http.post(
-        Uri.parse("$baseUrl/users/register"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(user.toJson()),
-      );
+  Future<void> registerUser(User user) async {
+    final response = await http.post(
+      Uri.parse("$baseUrl/users/register"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(user.toJson()),
+    );
 
-      if (response.statusCode == 201) {
-        return true; // Registration successful
-      } else {
-        print("Failed to register user: ${response.body}");
-        return false;
-      }
-    } catch (e) {
-      print("Error during registration: $e");
-      return false;
+    if (response.statusCode != 201) {
+      final errorData = jsonDecode(response.body);
+      throw Exception(errorData['message'] ?? 'Registration failed');
     }
   }
+
 
   /// Login user and store token
   Future<bool> login(LoginUserModel loggedInUser) async {
@@ -181,7 +174,7 @@ Future<List<Collateral>> fetchAllUploadedCollaterals() async {
     String? token = await AuthStorage.getToken();
     if (token == null) return [];
     final response = await http.get(
-      Uri.parse("$baseUrl/profile/my-collaterals"), // Make sure this endpoint exists!
+      Uri.parse("$baseUrl/profile/my-collaterals"), 
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer $token",

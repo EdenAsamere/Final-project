@@ -18,7 +18,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     context.read<ProfileBloc>().add(LoadProfile());
-    context.read<ProfileBloc>().add(GetIdDocumentVerificationStatus());
   }
 
   @override
