@@ -180,6 +180,13 @@ class _UploadCollateralScreenState extends State<UploadCollateralScreen> {
     }
   }
 
+  void _deleteCollateral(String documentType) {
+    _selectedDocumentType = documentType;
+    final collateral = uploadedCollateralMap[_selectedDocumentType]!;
+    final collateralidtodelete =  collateral.id;
+    BlocProvider.of<CollateralBloc>(context).add(DeleteCollateral(collateralidtodelete));
+  }
+
   // Open the image inside the app.
   void _openFile(String url) {
     Navigator.push(
@@ -254,7 +261,13 @@ class _UploadCollateralScreenState extends State<UploadCollateralScreen> {
                 _selectedDocumentType = null;
                 _isUploading = false;
               });
-            } else if (state is CollateralFailure) {
+            } else if (state is CollateralDeleteSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message), backgroundColor: Colors.green),
+              );
+              BlocProvider.of<CollateralBloc>(context).add(FetchAllCollaterals());
+            }
+            else if (state is CollateralFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text("Error: ${state.error}"), backgroundColor: Colors.red),
               );
@@ -315,82 +328,57 @@ class _UploadCollateralScreenState extends State<UploadCollateralScreen> {
               
                           : null,
                     trailing: _isUploading && _selectedDocumentType == docName
-    ? const CircularProgressIndicator()
-    : Container(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Transform.translate(
-              offset: const Offset(15, -15),
-              child: Text(
-                uploadedCollateralMap[docName]?.status ?? 'Not uploaded',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: _getStatusColor(uploadedCollateralMap[docName]?.status),
-                ),
-              ),
-            ),
-            const SizedBox(height: 4),
-            SizedBox(
-              height: 27,
-              child: Transform.translate(
-                offset: const Offset(15, 0),
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    backgroundColor: isUploaded 
-                        ? const Color.fromARGB(255, 123, 230, 0).withOpacity(0.1)
-                        : null,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      side: BorderSide(
-                        color: isUploaded 
-                            ? const Color.fromARGB(255, 123, 230, 0)
-                            : Colors.transparent,
-                        width: isUploaded ? 1.0 : 0.0,
-                      ),
-                    ),
-                  ),
-                  onPressed: () {
-                    if (isUploaded) {
-                      _onEditPressed(docName);
-                    } else {
-                      showUploadOptions(docName);
-                    }
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        isUploaded ? Icons.edit : Icons.upload,
-                        size: 16,
-                        color: isUploaded 
-                            ? const Color.fromARGB(255, 123, 230, 0)
-                            : Colors.grey[700],
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        isUploaded ? 'Update' : 'Upload',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: isUploaded 
-                              ? const Color.fromARGB(255, 123, 230, 0)
-                              : Colors.grey[700],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-                          
+                      ? const CircularProgressIndicator()
+                      : isUploaded
+                          ? PopupMenuButton<String>(
+                              onSelected: (value) {
+                                if (value == 'update') {
+                                  showReuploadOptions(docName);
+                                } else if (value == 'remove') {
+                                  _deleteCollateral(docName);
+                                }
+                              },
+                              itemBuilder: (BuildContext context) => [
+                                const PopupMenuItem(
+                                  value: 'update',
+                                  child: ListTile(
+                                    leading: Icon(Icons.edit, color: Color.fromARGB(255, 123, 230, 0)),
+                                    title: Text('Update Document'),
+                                  ),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'remove',
+                                  child: ListTile(
+                                    leading: Icon(Icons.delete, color: Colors.red),
+                                    title: Text('Remove Document'),
+                                  ),
+                                ),
+                              ],
+                              icon: const Icon(Icons.more_vert, color: Colors.black54),
+                            )
+                          : TextButton(
+                              onPressed: () => showUploadOptions(docName),
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children:[
+                                  Icon(Icons.upload, 
+                                      color: Color.fromARGB(255, 123, 230, 0), 
+                                      size: 20),
+                                  SizedBox(width: 4),
+                                
+                                  Text('Upload',
+                                      style: TextStyle(
+                                          color: Color.fromARGB(255, 123, 230, 0),
+                                          fontSize: 14),
+                                          ),
+                                ],
+                              ),
+                            ),
+                                          
                     ),
                   ),
                 );

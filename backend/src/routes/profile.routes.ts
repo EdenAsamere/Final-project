@@ -12,7 +12,8 @@ import {
     updateCollateralDocument,
     getApprovedCollateralDocuments,
     getPendingCollateralDocuments,
-    getRejectedCollateralDocuments
+    getRejectedCollateralDocuments,
+    getIdverificationStatus
 } from '../controllers/profile.controller';
 import { authenticate } from '../middlewares/auth.middleware';
 import upload from "../middlewares/upload";
@@ -32,5 +33,6 @@ router.get('/collateral/:id', authenticate, getCollateralDocument);
 router.get('/users-collaterals/:id', authenticate, getUserCollateralDocument);
 router.get('/my-collaterals', authenticate, getMyCollateralDocuments);
 router.delete('/delete-collateral/:id', authenticate, deleteCollateralDocument);
+router.get('/id-documentstatus', authenticate, getIdverificationStatus);
 
 export default router;

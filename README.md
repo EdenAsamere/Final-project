@@ -16,16 +16,17 @@ The **e-QUB App** is a digital platform designed to facilitate traditional Equb 
 
 ## Project Overview
 
-The **e-QUB App** leverages modern technologies to digitize and improve the Equb system. It is designed for ease of use and ensures secure transactions. By integrating features such as document uploads, ID verification, and payment processing, the platform bridges the gap between traditional practices and digital convenience.
+The **e-QUB App** uses modern technologies to digitize and improve the Equb system. It is designed for ease of use and ensures secure transactions. By integrating features such as document uploads, ID verification, and payment processing, the platform bridges the gap between traditional practices and digital convenience.
 
 ### Technologies Used
 
 - **Frontend:** Flutter for building an interactive cross-platform mobile app.
 - **Backend:** Node.js for handling API requests and business logic.
 - **Database:** MongoDB for managing user and group data.
+- **Blockchain:** For immutable data storage and transparency.
 - **Authentication:** OTP verification via SMS.
 - **Payment Integration:** Chapa for secure payment processing.
-- **Storage:** AWS S3 for handling file uploads such as scanned IDs and documents.
+- **Storage:** Cloudinary for handling file uploads such as scanned IDs and documents.
 
 ## Group Members
 

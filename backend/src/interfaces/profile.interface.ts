@@ -15,6 +15,7 @@ export interface IProfile extends Document {
         
     };
     collateraldocumentId: [Schema.Types.ObjectId];
+    idVerificationId: Schema.Types.ObjectId;
     penality: {
         penalityPoints: number;  
         penalityReason: string;  

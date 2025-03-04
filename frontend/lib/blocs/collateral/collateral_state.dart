@@ -15,6 +15,10 @@ class CollateralListSuccess extends CollateralState {
   final List<Collateral> collaterals;
   CollateralListSuccess(this.collaterals);
 }
+class CollateralDeleteSuccess extends CollateralState {
+  final String message;
+  CollateralDeleteSuccess(this.message);
+}
 
 class CollateralFailure extends CollateralState {
   final String error;

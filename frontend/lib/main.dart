@@ -1,10 +1,14 @@
 import 'package:equbapp/blocs/collateral/collateral_bloc.dart';
+import 'package:equbapp/blocs/idVerification/idverification_bloc.dart';
 import 'package:equbapp/blocs/profile/profile_bloc.dart';
 import 'package:equbapp/firebase_options.dart';
+import 'package:equbapp/repositories/idVerification_repository.dart';
+import 'package:equbapp/screens/idVerificationMethod_screen.dart';
 import 'package:equbapp/screens/login_screen.dart';
 import 'package:equbapp/screens/profile_screen.dart';
 import 'package:equbapp/screens/registeration_screen.dart';
 import 'package:equbapp/screens/upload_collaterals_screen.dart';
+import 'package:equbapp/screens/verifyIdentity_screen.dart';
 import 'package:equbapp/theme/theme.dart';
 import 'package:equbapp/widgets/mainScreen.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +46,9 @@ class MyApp extends StatelessWidget {
         BlocProvider<CollateralBloc>(
           create: (context) => CollateralBloc(UserRepository()),
         ),
+        BlocProvider<IdverificationBloc>(
+          create: (context) => IdverificationBloc(IdverificationRepository()),
+        ),
    
       ],
       child: MaterialApp(
@@ -66,6 +73,8 @@ class MyApp extends StatelessWidget {
           '/home': (context) => const MainScreen(),
           '/profile': (context) => ProfileScreen(),
           '/upload-collaterals': (context) => UploadCollateralScreen(),
+          '/verify-identity': (context) => const VerifyIdentityScreen(),
+          '/id-verification-methods': (context) => const IDVerificationMethodScreen(), 
         },
       ),
     );

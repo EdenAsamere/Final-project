@@ -63,33 +63,12 @@ export const uploadCollateralDocument = async (req: Request, res: Response): Pro
             return;
         }
 
-        const newDocument = new collateralModel({
-            userId,
-            documentType,
-            file,
-            status: "pending",
-            verified: false
-        });
-    
-        await newDocument.save();
-   
+        const newDocument = await profileService.uploadCollateralDocument(userId, documentType, file);
         res.status(201).json({ message: "Collateral document uploaded successfully", data: newDocument });
     } catch (error) {
         console.log(error);
         const errorMessage = error instanceof Error ? error.message : "Unknown error";
-        
-        const errorDetails = JSON.stringify(error, Object.getOwnPropertyNames(error));
-        
-        console.error("Upload Error Details:", {
-            message: errorMessage,
-            details: errorDetails
-        });
-        
-        
-        res.status(500).json({ 
-            message: errorMessage,
-            details: errorDetails
-        });
+        res.status(500).json({ message: `Error uploading collateral document: ${errorMessage}` });
     }
 };
 
@@ -150,6 +129,7 @@ export const getMyCollateralDocuments = async (req: Request, res: Response): Pro
             return;
         }
         const collateral = await profileService.getMyCollateralDocuments(userId);
+        console.log("collateral", collateral);
         res.status(200).json({ message: "Collateral document retrieved successfully", data: collateral });
     }
     catch(error){
@@ -270,10 +250,34 @@ export const deleteCollateralDocument = async (req: Request, res: Response): Pro
             res.status(400).json({ message: "Collateral ID is required" });
             return;
         }
+        const userId = (req as AuthRequest).user?.userId;
+        if (!userId) {
+            res.status(403).json({ message: "Unauthorized: User not found in token" });
+            return;
+        }
 
-        const collateral = await profileService.deleteCollateralDocument(collateralId);
+
+
+
+        const collateral = await profileService.deleteCollateralDocument(collateralId,userId);
         res.status(200).json({ message: "Collateral document deleted successfully", data: collateral });
     } catch (error) {
         res.status(500).json({ message: error instanceof Error ? error.message : "Error deleting collateral document" });
     }
+
+    
 };
+
+export const getIdverificationStatus = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const userId = (req as AuthRequest).user?.userId;
+        if (!userId) {
+            res.status(403).json({ message: "Unauthorized: User not found in token" });
+            return;
+        }
+        const idVerification = await profileService.getIdverificationStatus(userId);
+        res.status(200).json({ message: "ID verification status retrieved successfully", data: idVerification });
+    } catch (error) {
+        res.status(500).json({ message: error instanceof Error ? error.message : "Error retrieving ID verification status" });
+    }
+}
