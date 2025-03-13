@@ -15,6 +15,7 @@ export const registerUser = async (
     createUserValidation.parse(req.body);
     const { firstName, lastName, phoneNumber, city, password, confirmPassword } = req.body;
 
+
     try {
       const user = await userService.register({
         firstName,
@@ -22,7 +23,7 @@ export const registerUser = async (
         phoneNumber,
         city,
         password,
-        confirmPassword,
+        confirmPassword
       });
       res.status(201).json({
         message: 'User registered successfully',

@@ -38,7 +38,8 @@ export class UserService {
                 _id: user._id,
                 phoneNumber: user.phoneNumber,
                 role: user.role,
-                verified: user.verified,
+                idverified: user.Idverified,
+                collateralVerified: user.Collateralverified,
             },
     }
     }
@@ -52,7 +53,8 @@ export class UserService {
         password: string;
         confirmPassword: string;
       }): Promise<any> {
-        const { firstName, lastName, phoneNumber, city, password, confirmPassword } = body;
+        const { firstName, lastName, phoneNumber, city, password, confirmPassword} = body;
+      
       
         // Check for existing user
         const existingUser = await UserModel.findOne({ phoneNumber });
@@ -71,8 +73,10 @@ export class UserService {
           phoneNumber,
           password: hashedPassword,
           role: 'User',
-          verified: false,
+          Idverified : false,
+          Collateralverified : false,
         });
+        
       
         const savedUser = await newUser.save();
       

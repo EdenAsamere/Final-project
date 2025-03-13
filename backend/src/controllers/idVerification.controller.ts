@@ -106,6 +106,12 @@ export const approveIdVerificationDocument = async (req: Request, res: Response)
             res.status(403).json({ message: "Unauthorized: User not found in token" });
             return;
         }
+        const IdDocument = await idVerificationModel.findById(idVerificationId).exec();
+        if(!IdDocument){
+            res.status(400).json({ message: "ID verification document not found" });
+            return;
+        }
+        const idOwner = IdDocument.userId;
 
         const user = await userModel.findById(userId).exec();
                 if (!user || user.role !== "Admin") {
@@ -113,8 +119,7 @@ export const approveIdVerificationDocument = async (req: Request, res: Response)
                     return;
                 }
         
-
-        const result = await idVerificationService.approveIdVerificationDocument(idVerificationId);
+        const result = await idVerificationService.approveIdVerificationDocument(idVerificationId, idOwner.toString());
         res.status(201).json({ message: "id document approved successfully", data: result });
     }
     catch (error) {

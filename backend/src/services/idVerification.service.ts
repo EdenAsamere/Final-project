@@ -1,8 +1,7 @@
 import IdVerification from '../models/idVerification.model';
 import profileModel from "../models/profile.model";
 import { IdType, VerificationStatus } from '../interfaces/idVerfication.interface';
-import { id } from 'ethers';
-
+import userModel from '../models/user.model';
 export class IdVerificationService {
     async uploadIdVerificationDocument(
         userId: string,
@@ -56,12 +55,19 @@ export class IdVerificationService {
     }
 
 
-    async approveIdVerificationDocument(idVerificationId: string) {
-        return await IdVerification.findOneAndUpdate(
+    async approveIdVerificationDocument(idVerificationId: string, idOwner: string) {
+        
+        const updatedIdVerification = await IdVerification.findOneAndUpdate(
             { _id: idVerificationId },
             { $set: { verified: true, status: VerificationStatus.APPROVED } },
             { new: true }
         ).exec();
+        const user = await userModel.findOne({ userId: idOwner }).exec();
+        if(user){
+            user.Idverified = true;
+            await user.save();
+        }
+        return updatedIdVerification;
 
     };
 

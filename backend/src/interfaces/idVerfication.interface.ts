@@ -19,5 +19,4 @@ export interface IIdVerification extends Document {
   selfie: string;
   status: VerificationStatus;
   adminRemark: string;
-  verified: boolean;
 }
