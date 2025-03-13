@@ -157,8 +157,13 @@ export const verifyCollateralDocument = async (req: Request, res: Response): Pro
             res.status(403).json({ message: "Forbidden: Only admins can verify collateral documents" });
             return;
         }
-
-        const collateral = await profileService.verifyCollateralDocument(collateralId);
+        const CollateralDocument = await collateralModel.findById(collateralId).exec();
+        if(!CollateralDocument){
+            res.status(400).json({ message: "Collateral verification document not found" });
+            return;
+        }
+        const idOwner = CollateralDocument.userId;
+        const collateral = await profileService.verifyCollateralDocument(collateralId,idOwner.toString());
         res.status(200).json({ message: "Collateral document verified successfully", data: collateral });
     } catch (error) {
         res.status(500).json({ message: error instanceof Error ? error.message : "Error verifying collateral document" });
@@ -207,7 +212,7 @@ export const getRejectedCollateralDocuments = async (req: Request, res: Response
         const collateral = await profileService.getRejectedCollateralDocuments();
         res.status(200).json({ message: "Rejected collateral documents retrieved successfully", data: collateral });
     } catch (error) {
-        res.status(500).json({ message: error instanceof Error ? error.message : "Error retrieving approved collateral documents" });
+        res.status(500).json({ message: error instanceof Error ? error.message : "Error retrieving rejected collateral documents" });
     }
 };
 export const updateCollateralDocument = async (req: Request, res: Response): Promise<void> => {

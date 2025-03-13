@@ -2,6 +2,7 @@ import profileModel from "../models/profile.model";
 import collateralModel from "../models/collateral.model";
 import IdVerification from '../models/idVerification.model';
 import mongoose from "mongoose";
+import userModel from "../models/user.model";
 
 export class ProfileService {
     async getUserProfile(userId: string){
@@ -81,12 +82,18 @@ export class ProfileService {
     }
    
 
-    async verifyCollateralDocument(collateralId: string) {
-        return await collateralModel.findOneAndUpdate(
+    async verifyCollateralDocument(collateralId: string, idOwner: string) {
+        const approvedCollateral = await collateralModel.findOneAndUpdate(
             { _id: collateralId },
             { $set: { verified: true, status: 'approved' } },
             { new: true }
         ).exec();
+        const user = await userModel.findOne({ userId: idOwner }).exec();
+        if(user){
+            user.Collateralverified = true;
+            await user.save();
+        }
+        return approvedCollateral;
     }
     
     async rejectCollateralDocument(collateralId: string, adminRemark: string) {

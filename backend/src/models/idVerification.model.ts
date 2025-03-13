@@ -1,4 +1,3 @@
-// src/models/idVerification.model.ts
 import { Schema, model } from 'mongoose';
 import { IIdVerification, IdType, VerificationStatus } from '../interfaces/idVerfication.interface';
 
@@ -29,10 +28,6 @@ const IdVerificationSchema = new Schema<IIdVerification>(
     adminRemark: {
       type: String,
       default: ''
-    },
-    verified: {
-      type: Boolean,
-      default: false
     }
   },
   { timestamps: true }
