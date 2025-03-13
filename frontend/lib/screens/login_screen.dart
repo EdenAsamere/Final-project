@@ -110,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     loginBloc.add(
                       LoginUser(
                         LoginUserModel(
-                          phoneNumber: "+251${_phoneController.text.trim()}", // Ensure +251 is added
+                          phoneNumber: "+251${_phoneController.text.trim()}",
                           password: _passwordController.text,
                         ),
                       ),

@@ -1,5 +1,8 @@
 import profileModel from "../models/profile.model";
 import collateralModel from "../models/collateral.model";
+import IdVerification from '../models/idVerification.model';
+import mongoose from "mongoose";
+import userModel from "../models/user.model";
 
 export class ProfileService {
     async getUserProfile(userId: string){
@@ -20,10 +23,12 @@ export class ProfileService {
         file: string
     ) {
         const userProfile = await profileModel.findOne({ userId }).exec();
+        console.log("userProfile", userProfile);
         if (!userProfile) {
             throw new Error("User profile not found");
         }
         const collateral = new collateralModel({
+            userId,
             documentType,
             file,
             status: 'pending',
@@ -33,7 +38,7 @@ export class ProfileService {
         await collateral.save();
         userProfile.collateraldocumentId.push(collateral.id);
         await userProfile.save();
-        return userProfile;
+        return collateral;
     }
     
     async updateCollateralDocument(collateralId: string, fileUrl: string) {
@@ -55,8 +60,6 @@ export class ProfileService {
         console.log("Updated Collateral File:", updatedCollateral);
         return updatedCollateral;
     }
-    
-
 
     async getCollateralDocument(collateralId: string) {
         return await collateralModel.findById(collateralId).exec();
@@ -65,6 +68,7 @@ export class ProfileService {
         return await collateralModel.find({ userId }).exec();
     };
     async getMyCollateralDocuments(userId: string) {
+        console.log("userId", userId);
         return await collateralModel.find({ userId }).exec();
     };
     async getRejectedCollateralDocuments() {
@@ -78,12 +82,18 @@ export class ProfileService {
     }
    
 
-    async verifyCollateralDocument(collateralId: string) {
-        return await collateralModel.findOneAndUpdate(
+    async verifyCollateralDocument(collateralId: string, idOwner: string) {
+        const approvedCollateral = await collateralModel.findOneAndUpdate(
             { _id: collateralId },
             { $set: { verified: true, status: 'approved' } },
             { new: true }
         ).exec();
+        const user = await userModel.findOne({ userId: idOwner }).exec();
+        if(user){
+            user.Collateralverified = true;
+            await user.save();
+        }
+        return approvedCollateral;
     }
     
     async rejectCollateralDocument(collateralId: string, adminRemark: string) {
@@ -94,15 +104,38 @@ export class ProfileService {
         ).exec();
     };
 
-    async deleteCollateralDocument(collateralId: string) {
+    async deleteCollateralDocument(collateralId: string, userId: string) {
         const collateral = await collateralModel.findById(collateralId).exec();
-        
+   
         if (!collateral) {
-            return null;
+            throw new Error("Collateral document not found");
         }
+    
+
+        if (collateral.status === "approved") {
+            throw new Error("Cannot delete an approved collateral document");
+        }
+    
+        const userProfile = await profileModel.findOne({ userId }).exec();
+        if (!userProfile) {
+            throw new Error("User profile not found");
+        }
+    
+        const collateralIndex = userProfile.collateraldocumentId.findIndex(id => 
+            id.toString() === collateralId.toString()
+        );
+    
+        if (collateralIndex === -1) {
+            throw new Error("Collateral document not associated with this user");
+        }
+    
+        userProfile.collateraldocumentId.splice(collateralIndex, 1);
+        
+      
+        await userProfile.save();
         await collateral.deleteOne();
     
-        return collateral;
+        return { message: "Collateral document deleted successfully" };
     }
 
     async addPenality(
@@ -148,5 +181,17 @@ export class ProfileService {
         userProfile.penality.penalityAmount = penalityAmount;
 
         await userProfile.save();
+    }
+
+    async getIdverificationStatus(userId: String):Promise<any>{
+        const userProfile = await profileModel.findOne({ userId
+        }).exec();
+
+        if (!userProfile) {
+            throw new Error("User profile not found");
+        }
+
+        const verificationStatusofuser = await IdVerification.findOne({ userId: userProfile.userId }).exec();
+        return verificationStatusofuser;
     }
 }

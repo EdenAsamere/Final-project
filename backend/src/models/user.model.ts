@@ -13,8 +13,8 @@ const user = new Schema<IUserInterface>({
         select: false,
     }, 
     role: { type: String, enum: ['Admin', 'User'], required: true },
-    verified: { type: Boolean, required: true },
-    chapaAccountId: { type: String },
+    Collateralverified: { type: Boolean, required: true },
+    Idverified: { type: Boolean, required: true },
 },
 {
     timestamps: true,

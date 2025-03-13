@@ -66,5 +66,21 @@ class CollateralBloc extends Bloc<CollateralEvent, CollateralState> {
         emit(CollateralFailure("An error occurred. Please try again later."));
       }
     });
+
+
+     on<DeleteCollateral>((event, emit) async {
+      emit(CollateralLoading());
+      try {
+        final deletedcollateral = await userRepository.removeCollateralDocument(event.id);
+        if (deletedcollateral) {
+          emit(CollateralDeleteSuccess("Collateral deleted successfully"));
+          add(FetchAllCollaterals());
+        } else {
+          emit(CollateralFailure("Failed to delete collateral"));
+        }
+      } catch (e) {
+        emit(CollateralFailure("An error occurred. Please try again later."));
+      }
+    });
   }
 }
