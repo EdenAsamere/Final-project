@@ -21,8 +21,8 @@ class UserProfile {
       lastName: json["lastName"] ?? "",
       email: json["email"] ?? "",
       profilePic: json["profilePic"] ?? "",
-      city: json["address"]["city"] ?? "",
-      penaltyPoints: json["penality"]["penalityPoints"] ?? 0,
+      city: json["address"]?["city"] ?? "",
+      penaltyPoints: json["penality"]?["penalityPoints"] ?? 0,
     );
   }
 }

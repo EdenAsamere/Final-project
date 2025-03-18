@@ -14,7 +14,11 @@ const IdVerificationSchema = new Schema<IIdVerification>(
       enum: Object.values(IdType),
       required: true
     },
-    idDocument: {
+    frontidDocument: {
+      type: String,
+      required: true
+    },
+    backidDocument: {
       type: String,
       required: true
     },

@@ -3,10 +3,12 @@ import 'package:equbapp/blocs/idVerification/idverification_bloc.dart';
 import 'package:equbapp/blocs/profile/profile_bloc.dart';
 import 'package:equbapp/firebase_options.dart';
 import 'package:equbapp/repositories/idVerification_repository.dart';
+import 'package:equbapp/screens/idUpload_screen.dart';
 import 'package:equbapp/screens/idVerificationMethod_screen.dart';
 import 'package:equbapp/screens/login_screen.dart';
 import 'package:equbapp/screens/profile_screen.dart';
 import 'package:equbapp/screens/registeration_screen.dart';
+import 'package:equbapp/screens/selfiecapture_screen.dart';
 import 'package:equbapp/screens/upload_collaterals_screen.dart';
 import 'package:equbapp/screens/verifyIdentity_screen.dart';
 import 'package:equbapp/theme/theme.dart';
@@ -71,11 +73,14 @@ class MyApp extends StatelessWidget {
           '/login': (context) => LoginScreen(),
           '/register': (context) =>  RegistrationScreen(),
           '/home': (context) => const MainScreen(),
-          '/profile': (context) => ProfileScreen(),
+          '/profile': (context) => const ProfileScreen(),
           '/upload-collaterals': (context) => UploadCollateralScreen(),
           '/verify-identity': (context) => const VerifyIdentityScreen(),
           '/id-verification-methods': (context) => const IDVerificationMethodScreen(), 
-        },
+          '/verification-method': (context) => const IDVerificationMethodScreen(),
+          '/upload-id': (context) => const IDUploadScreen(selectedMethod: 'default'),
+          '/take-selfie': (context) => const SelfieCaptureScreen(selectedMethod: 'default'),
+          },
       ),
     );
   }
