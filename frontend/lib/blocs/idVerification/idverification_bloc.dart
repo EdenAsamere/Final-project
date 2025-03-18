@@ -44,12 +44,12 @@ class IdverificationBloc extends Bloc<IdVerificationEvent, IdVerificationState> 
         try {
           final submittedIdDocuments = await idverificationRepository.submitIdVerificationDocuments();
           if (submittedIdDocuments != null) {
-            emit(IdVerificationSuccess("Id Documents submitted successfully"));
+            emit(IdSubmittedSuccess("Id Documents submitted successfully"));
           } else {
-            emit(IdVerificationFailure("Failed to submit Id Documents"));
+            emit(IdSubmittedFailure("Failed to submit Id Documents"));
           }
         } catch (e) {
-          emit(IdVerificationFailure("An error occurred. Please try again later."));
+          emit(IdSubmittedFailure("An error occurred. Please try again later."));
         }
       });
 

@@ -1,5 +1,6 @@
 import 'package:equbapp/screens/idUpload_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class IDVerificationMethodScreen extends StatefulWidget {
   const IDVerificationMethodScreen({super.key});
@@ -34,7 +35,6 @@ class _IDVerificationMethodScreenState extends State<IDVerificationMethodScreen>
                 fontWeight: FontWeight.bold,
               ),
             ),
-          
             const SizedBox(height: 16),
             Column(
               children: _verificationMethods.map((method) {
@@ -60,13 +60,15 @@ class _IDVerificationMethodScreenState extends State<IDVerificationMethodScreen>
               }).toList(),
             ),
             const SizedBox(height: 40),
-
             // Continue Button
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _selectedMethod != null
-                    ? () {
+                    ? () async {
+                        // Save the progress (user is moving to the Upload ID step)
+                        SharedPreferences prefs = await SharedPreferences.getInstance();
+                        await prefs.setString('verification_step', 'upload-id');
                         Navigator.push(
                           context,
                           MaterialPageRoute(

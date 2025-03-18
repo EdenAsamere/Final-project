@@ -6,7 +6,8 @@ export class IdVerificationService {
     async uploadIdVerificationDocument(
         userId: string,
         idType: string,
-        idDocument: string,
+        frontidDocument: string,
+        backidDocument: string
     ){
         const userProfile = await profileModel.findOne({ userId
         }).exec();
@@ -16,7 +17,8 @@ export class IdVerificationService {
         const idVerification = new IdVerification({
             userId,
             idType,
-            idDocument,
+            frontidDocument,
+            backidDocument,
             selfie: '',
             adminRemark: '',
             verified: false
@@ -105,7 +107,7 @@ export class IdVerificationService {
         return await IdVerification.find({ status: VerificationStatus.REJECTED }).exec();
     }
 
-    async reuploadDocumentafterRejection(userId: string, idType: IdType, idDocument: string) {
+    async reuploadDocumentafterRejection(userId: string, idType: IdType, frontidDocument: string, backidDocument: string) {
         const userProfile = await profileModel.findOne({ userId }).exec();
         if (!userProfile) {
             throw new Error("User profile not found");
@@ -116,7 +118,8 @@ export class IdVerificationService {
         }
         if (idVerification.status == VerificationStatus.REJECTED) {
             idVerification.idType = idType;
-            idVerification.idDocument = idDocument;
+            idVerification.frontidDocument = frontidDocument;
+            idVerification.backidDocument = backidDocument;
             idVerification.selfie = '';
             idVerification.status = VerificationStatus.PENDING;
             await idVerification.save();
@@ -125,7 +128,7 @@ export class IdVerificationService {
         throw new Error("ID verification not rejected");
     }
 
-    async reuploadDocumentBeforeSubmission(userId: string, idType: IdType, idDocument: string) {
+    async reuploadDocumentBeforeSubmission(userId: string, idType: IdType, frontidDocument: string, backidDocument: string) {
         const userProfile = await profileModel.findOne({ userId
         }).exec();
 
@@ -138,7 +141,8 @@ export class IdVerificationService {
             throw new Error("ID verification not found");
         }
         idVerification.idType = idType;
-        idVerification.idDocument = idDocument;
+        idVerification.frontidDocument = frontidDocument;
+        idVerification.backidDocument = backidDocument;
         await idVerification.save();
         return idVerification;
     }

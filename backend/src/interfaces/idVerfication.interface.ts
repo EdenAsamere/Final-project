@@ -15,7 +15,8 @@ export enum VerificationStatus {
 export interface IIdVerification extends Document {
   userId: Schema.Types.ObjectId;
   idType: IdType;
-  idDocument: string;
+  frontidDocument: string;
+  backidDocument: string;
   selfie: string;
   status: VerificationStatus;
   adminRemark: string;

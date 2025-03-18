@@ -24,37 +24,36 @@ class UserRepository {
     }
   }
 
-
   /// Login user and store token
   Future<bool> login(LoginUserModel loggedInUser) async {
-  try {
-    final response = await http.post(
-      Uri.parse("$baseUrl/users/login"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode(loggedInUser.toJson()),
-    );
+    try {
+      final response = await http.post(
+        Uri.parse("$baseUrl/users/login"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(loggedInUser.toJson()),
+      );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
 
-      if (data["user"] != null && data["user"]["token"] != null) {
-        String token = data["user"]["token"];
-        
-        // Store the token securely
-        await AuthStorage.saveToken(token);
-        return true; // Login successful
+        if (data["user"] != null && data["user"]["token"] != null) {
+          String token = data["user"]["token"];
+
+          // Store the token securely
+          await AuthStorage.saveToken(token);
+          return true; // Login successful
+        } else {
+          return false; // Invalid response format
+        }
       } else {
-        return false; // Invalid response format
+        print("Login failed: ${response.body}"); // Log the failure reason
+        return false; // Invalid credentials
       }
-    } else {
-      print("Login failed: ${response.body}"); // Log the failure reason
-      return false; // Invalid credentials
+    } catch (e) {
+      print("Error during login: $e");
+      return false; // Handle network error
     }
-  } catch (e) {
-    print("Error during login: $e");
-    return false; // Handle network error
   }
-}
 
   /// Logout user (clear token)
   Future<void> logout() async {
@@ -89,8 +88,8 @@ class UserRepository {
     }
   }
 
-/// upload collateral
-Future<Collateral?> uploadCollateralDocument(Collateral collateral) async {
+  /// upload collateral
+  Future<Collateral?> uploadCollateralDocument(Collateral collateral) async {
     try {
       // Create a multipart request targeting the collateral upload endpoint
       var request = http.MultipartRequest(
@@ -113,7 +112,8 @@ Future<Collateral?> uploadCollateralDocument(Collateral collateral) async {
         return null;
       }
 
-      final mimeType = lookupMimeType(collateral.file) ?? "application/octet-stream";
+      final mimeType =
+          lookupMimeType(collateral.file) ?? "application/octet-stream";
       final mimeTypeData = mimeType.split('/');
 
       var multipartFile = await http.MultipartFile.fromPath(
@@ -133,7 +133,8 @@ Future<Collateral?> uploadCollateralDocument(Collateral collateral) async {
         print(responseData);
         return Collateral.fromJson(responseData["data"]);
       } else {
-        print("Failed to upload collateral: ${response.statusCode} - ${response.body}");
+        print(
+            "Failed to upload collateral: ${response.statusCode} - ${response.body}");
         return null;
       }
     } catch (e) {
@@ -142,19 +143,18 @@ Future<Collateral?> uploadCollateralDocument(Collateral collateral) async {
     }
   }
 
-Future<Collateral?> fetchUploadedCollateral(String id) async {
-
-  try {
-    String? token = await AuthStorage.getToken();
-    if (token == null) return null;
-    final response = await http.get(
-      Uri.parse("$baseUrl/profile/collateral/$id"), 
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
-      },
-    );
-    if (response.statusCode == 201) {
+  Future<Collateral?> fetchUploadedCollateral(String id) async {
+    try {
+      String? token = await AuthStorage.getToken();
+      if (token == null) return null;
+      final response = await http.get(
+        Uri.parse("$baseUrl/profile/collateral/$id"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      );
+      if (response.statusCode == 201) {
         final data = jsonDecode(response.body)["data"];
         print(data);
         return Collateral.fromJson(data);
@@ -166,34 +166,34 @@ Future<Collateral?> fetchUploadedCollateral(String id) async {
       print("Error fetching profile: $e");
       return null;
     }
+  }
 
-   
-}
-Future<List<Collateral>> fetchAllUploadedCollaterals() async {
-  try {
-    String? token = await AuthStorage.getToken();
-    if (token == null) return [];
-    final response = await http.get(
-      Uri.parse("$baseUrl/profile/my-collaterals"), 
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
-      },
-    );
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body)["data"] as List;
-      return data.map((e) => Collateral.fromJson(e)).toList();
-    } else {
-      print("Failed to fetch collaterals: ${response.body}");
+  Future<List<Collateral>> fetchAllUploadedCollaterals() async {
+    try {
+      String? token = await AuthStorage.getToken();
+      if (token == null) return [];
+      final response = await http.get(
+        Uri.parse("$baseUrl/profile/my-collaterals"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body)["data"] as List;
+        return data.map((e) => Collateral.fromJson(e)).toList();
+      } else {
+        print("Failed to fetch collaterals: ${response.body}");
+        return [];
+      }
+    } catch (e) {
+      print("Error fetching collaterals: $e");
       return [];
     }
-  } catch (e) {
-    print("Error fetching collaterals: $e");
-    return [];
   }
-}
 
-Future<Collateral?> updateCollateralDocument(Collateral collateral,String id) async {
+  Future<Collateral?> updateCollateralDocument(
+      Collateral collateral, String id) async {
     try {
       // Create a multipart request targeting the collateral upload endpoint
       var request = http.MultipartRequest(
@@ -217,7 +217,8 @@ Future<Collateral?> updateCollateralDocument(Collateral collateral,String id) as
       }
 
       request.fields['documentType'] = collateral.documentType;
-      final mimeType = lookupMimeType(collateral.file) ?? "application/octet-stream";
+      final mimeType =
+          lookupMimeType(collateral.file) ?? "application/octet-stream";
       final mimeTypeData = mimeType.split('/');
 
       var multipartFile = await http.MultipartFile.fromPath(
@@ -234,7 +235,8 @@ Future<Collateral?> updateCollateralDocument(Collateral collateral,String id) as
         final responseData = json.decode(response.body);
         return Collateral.fromJson(responseData["data"]);
       } else {
-        print("Failed to update collateral: ${response.statusCode} - ${response.body}");
+        print(
+            "Failed to update collateral: ${response.statusCode} - ${response.body}");
         return null;
       }
     } catch (e) {
@@ -243,7 +245,7 @@ Future<Collateral?> updateCollateralDocument(Collateral collateral,String id) as
     }
   }
 
-   Future<bool> removeCollateralDocument(String id) async {
+  Future<bool> removeCollateralDocument(String id) async {
     try {
       String? token = await AuthStorage.getToken();
       if (token == null) return false;
@@ -284,18 +286,18 @@ Future<Collateral?> updateCollateralDocument(Collateral collateral,String id) as
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body)["data"];
-        if(data != null){
-          return data["status"];
+        print('object: $data');
+        if (data != null) {
+          return data["status"] ?? "Not Verified";
         }
-        
+        return "Not Verified";
       } else {
         print("Failed to fetch verification status: ${response.body}");
-        return "";
+        return "Not Verified";
       }
     } catch (e) {
       print("Error fetching verification status: $e");
-      return "";
+      return "Not Verified";
     }
-    return null;
   }
 }

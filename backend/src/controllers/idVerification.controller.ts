@@ -13,27 +13,25 @@ export const uploadIdVerificationDocument = async (req: Request, res: Response):
             res.status(403).json({ message: "Unauthorized: User not found in token" });
             return;
         }
-        if(!req.file){
-            res.status(400).json({ message: "No file uploaded" });
+        if (!req.files || !("frontId" in req.files) || !("backId" in req.files)) {
+            res.status(400).json({ message: "Both front and back ID files are required" });
             return;
         }
         const idType = req.body.idType;
-        const file = req.file.path;
+        const frontIdDocumentFile = (req.files as { [fieldname: string]: Express.Multer.File[] })["frontId"][0].path;
+        const backIdDocumentFile = (req.files as { [fieldname: string]: Express.Multer.File[] })["backId"][0].path;
+
         if (!idType) {
             res.status(400).json({ error: "id type is required" });
             return;
         }
-        if (!file) {
-            res.status(400).json({ error: "id Document file is required" });
-            return;
-        }
-
+       
         const existingDocument = await idVerificationModel.findOne({ userId, idType }).exec();   
             if (existingDocument) {
                 res.status(400).json({ error: `You have already uploaded a ${idType}. You can only upload one.` });
                 return;
             }
-        const result = await idVerificationService.uploadIdVerificationDocument(userId, idType, file);
+        const result = await idVerificationService.uploadIdVerificationDocument(userId, idType, frontIdDocumentFile, backIdDocumentFile);
         res.status(201).json({ message: "id document uploaded successfully", data: result });
     }
     catch (error) {
@@ -284,17 +282,15 @@ export const reuploadDocumentafterRejection = async (req: Request, res: Response
             res.status(400).json({ message: "No file uploaded" });
             return;
         }
+        if (!req.files || !("frontId" in req.files) || !("backId" in req.files)) {
+            res.status(400).json({ message: "Both front and back ID files are required" });
+            return;
+        }
         const idType = req.body.idType;
-        const idDocument = req.file.path;
-        if (!idType) {
-            res.status(400).json({ error: "id type is required" });
-            return;
-        }
-        if (!idDocument) {
-            res.status(400).json({ error: "id Document file is required" });
-            return;
-        }
-        const result = await idVerificationService.reuploadDocumentafterRejection(userId, idType, idDocument);
+        const frontIdDocumentFile = (req.files as { [fieldname: string]: Express.Multer.File[] })["frontId"][0].path;
+        const backIdDocumentFile = (req.files as { [fieldname: string]: Express.Multer.File[] })["backId"][0].path;
+
+        const result = await idVerificationService.reuploadDocumentafterRejection(userId, idType, frontIdDocumentFile, backIdDocumentFile);
         res.status(201).json({ message: "id document reuploaded successfully", data: result });
     }
     catch (error) {

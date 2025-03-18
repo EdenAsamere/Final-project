@@ -5,6 +5,7 @@ import 'package:equbapp/blocs/profile/profile_bloc.dart';
 import 'package:equbapp/blocs/profile/profile_event.dart';
 import 'package:equbapp/blocs/profile/profile_state.dart';
 import 'package:equbapp/models/user_profile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -14,10 +15,36 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  UserProfile? _profile;
+
   @override
   void initState() {
     super.initState();
+    _loadProfileData();
+  }
+
+  void _loadProfileData() {
     context.read<ProfileBloc>().add(LoadProfile());
+    context.read<ProfileBloc>().add(GetIdDocumentVerificationStatus());
+  }
+
+  Future<void> _handleVerifyIdentity() async {
+    final prefs = await SharedPreferences.getInstance();
+    final step = prefs.getString('verification_step');
+    if (step == 'upload-id') {
+      Navigator.pushNamed(context, '/upload-id');
+    } else if (step == 'take-selfie' || step == 'selfie-uploaded') {
+      Navigator.pushNamed(context, '/take-selfie');
+    } else {
+      Navigator.pushNamed(context, '/verification-method');
+    }
+  }
+
+  void _handleLogout() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+          content: Text("Logging out..."), backgroundColor: Colors.blue),
+    );
   }
 
   @override
@@ -26,21 +53,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(title: const Text('Profile')),
       body: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
-          if (state is ProfileFailure) {
+          if (state is ProfileSuccess) {
+            _profile = state.profile;
+          } else if (state is ProfileFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.error), backgroundColor: Colors.red),
+              SnackBar(
+                content: Text(state.error),
+                backgroundColor: Colors.red,
+                action: SnackBarAction(
+                  label: 'Retry',
+                  onPressed: _loadProfileData,
+                ),
+              ),
             );
           }
         },
         builder: (context, state) {
+          // If we have a profile, show it regardless of verification status
+          if (_profile != null) {
+            return _buildProfileBody(_profile!);
+          }
+
+          // Handle loading and error states
           if (state is ProfileLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is ProfileSuccess) {
-            return _buildProfileBody(state.profile);
           } else if (state is ProfileFailure) {
-            return const Center(child: Text("Error loading profile"));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Error loading profile",
+                      style: TextStyle(color: Colors.red)),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _loadProfileData,
+                    child: const Text("Retry"),
+                  ),
+                ],
+              ),
+            );
           }
-          return const Center(child: Text("Something went wrong"));
+
+          // Default state
+          return const Center(child: Text("Loading profile..."));
         },
       ),
     );
@@ -52,18 +107,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Verification status container
           BlocBuilder<ProfileBloc, ProfileState>(
+            buildWhen: (previous, current) =>
+                current is UserStatusSuccess ||
+                current is UserStatusLoading ||
+                current is UserStatusFailure,
             builder: (context, state) {
               String verificationText = "Verify your identity";
               bool isClickable = true;
-
-              if (state is UserStatusSuccess) {
+              if (state is UserStatusLoading) {
+                verificationText = "Loading verification status...";
+              } else if (state is UserStatusSuccess) {
                 if (state.status != null && state.status!.isNotEmpty) {
                   verificationText = state.status!;
                   isClickable = false;
                 }
+              } else if (state is UserStatusFailure) {
+                verificationText = "Error retrieving status";
               }
-
               return Container(
                 padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
@@ -72,7 +134,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 child: Row(
                   children: [
-                    const CircleAvatar(radius: 30, backgroundColor: Colors.white),
+                    const CircleAvatar(
+                        radius: 30, backgroundColor: Colors.white),
                     const SizedBox(width: 15),
                     Expanded(
                       child: Column(
@@ -86,6 +149,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               color: Colors.white,
                             ),
                           ),
+                          const SizedBox(height: 8),
                           Text.rich(
                             TextSpan(
                               text: verificationText,
@@ -98,12 +162,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               recognizer: isClickable
                                   ? (TapGestureRecognizer()
-                                    ..onTap = () {
-                                      Navigator.of(context).pushNamed('/verify-identity');
-                                    })
+                                    ..onTap = _handleVerifyIdentity)
                                   : null,
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -117,11 +179,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             },
           ),
           const SizedBox(height: 20),
-
+          // Profile menu items
           ProfileMenuItem(
             icon: Icons.person_outline,
             title: "Personal Information",
-            subtitle: "${profile.firstName} ${profile.lastName}, ${profile.email}",
+            subtitle: profile.email.isNotEmpty
+                ? "${profile.firstName} ${profile.lastName}, ${profile.email}"
+                : "${profile.firstName} ${profile.lastName}",
             onTap: () {},
           ),
           ProfileMenuItem(
@@ -152,11 +216,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             icon: Icons.logout,
             title: "Log Out",
             subtitle: "Secure your account for safety",
-            onTap: () => _handleLogout(context),
+            onTap: _handleLogout,
           ),
-
           const SizedBox(height: 20),
-          const Text("More", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text("More",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 10),
           ProfileMenuItem(
             icon: Icons.notifications_none,
@@ -172,12 +236,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  void _handleLogout(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Logging out..."), backgroundColor: Colors.blue),
     );
   }
 }
@@ -204,7 +262,9 @@ class ProfileMenuItem extends StatelessWidget {
         child: Icon(icon, color: Colors.black54),
       ),
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
-      subtitle: subtitle.isNotEmpty ? Text(subtitle, style: const TextStyle(color: Colors.grey)) : null,
+      subtitle: subtitle.isNotEmpty
+          ? Text(subtitle, style: const TextStyle(color: Colors.grey))
+          : null,
       trailing: const Icon(Icons.arrow_forward_ios, size: 16),
       onTap: onTap,
     );
